@@ -11,6 +11,7 @@ import tom3 from './tom3.wav';
 import crash1 from './crash1.wav';
 import crash2 from './crash2.wav';
 import crash3 from './crash3.wav';
+import ReactFCCtest from 'react-fcctest';
 
 const Pad = (props) => {
   return (
@@ -22,11 +23,12 @@ const Pad = (props) => {
 
 class Display extends React.Component {
 
-  renderPad(letter) {
+  renderPad(letter, id) {
     return (
       <Pad 
         key={letter}
         value={letter}
+        id={id}
       />
     );
   }
@@ -37,9 +39,15 @@ class Display extends React.Component {
       ['A', 'S', 'D'],
       ['Z', 'X', 'C'],
     ];
+    const drumId = [
+      ['crash1', 'crash2', 'crash3'],
+      ['tom1', 'tom2', 'tom3'],
+      ['kick', 'snare', 'hihat']
+    ];
+
     let row = [];
     for (let i = 0; i < numColumns; i++) {
-      row.push(this.renderPad(keySet[keysetRow][i]))
+      row.push(this.renderPad(keySet[keysetRow][i], drumId[keysetRow][i]))
     }
     return row;
   }
@@ -118,6 +126,7 @@ class App extends React.Component {
           onKeyEvent={(key) => {this.playDrum(key)}} 
           >
         </KeyboardEventHandler>
+        <ReactFCCtest />
       </div>
     )
   }
