@@ -85,6 +85,8 @@ class App extends React.Component {
       z: kick, x: snare, c: hihat,
     };
 
+    this.stopDrum()
+
     this.setState ({
       drum: drumMap[key],
       drumSound: soundMap[key],
@@ -115,12 +117,6 @@ class App extends React.Component {
           handleEventType="keydown"
           onKeyEvent={(key) => {this.playDrum(key)}} 
           >
-          
-        </KeyboardEventHandler>
-        <KeyboardEventHandler
-          handleKeys={['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']}
-          handleEventType="keyup"
-          onKeyEvent={() => {this.stopDrum()}}>
         </KeyboardEventHandler>
       </div>
     )
