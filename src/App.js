@@ -11,120 +11,74 @@ import tom3 from './tom3.wav';
 import crash1 from './crash1.wav';
 import crash2 from './crash2.wav';
 import crash3 from './crash3.wav';
+import ReactFCCtest from 'react-fcctest';
 
-const Pad = (props) => {
+
+const Display = (props) => {
   return (
-    <button className="drum-pad">
-      {props.value}
-    </button>
-  );
+    <div id="display">
+
+    </div>
+  )
 };
 
-class Display extends React.Component {
-
-  renderPad(letter) {
-    return (
-      <Pad 
-        key={letter}
-        value={letter}
-      />
-    );
-  }
-
-  renderRow(numColumns, keysetRow) {
-    const keySet = [
-      ['Q', 'W', 'E'],
-      ['A', 'S', 'D'],
-      ['Z', 'X', 'C'],
-    ];
-    let row = [];
-    for (let i = 0; i < numColumns; i++) {
-      row.push(this.renderPad(keySet[keysetRow][i]))
-    }
-    return row;
-  }
-
-  renderGrid(numRows, numColumns) {
-    let grid = [];
-    for (let i = 0; i < numRows; i++) {
-      grid.push(<div key={i}>{this.renderRow(numColumns, i)}</div>);
-    }
-    return grid;
-  }
-
-  render() {
-    return (
-      <div className="keypad">
-        {this.renderGrid(3, 3)}
-      </div>
-    );
-  }
+const DrumPad = (props) => {
+  return (
+    <button className="drum-pad" id={props.id}>
+      {props.kbd}
+      <audio src={props.drum} className="clip" id={props.kbd}/>
+    </button>
+  );
 };
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      drum: '',
-      drumSound: '',
-      soundStatus: 'STOPPED',
-      finished: false,
+      drumMap: {
+        'q': crash1, 'w': crash2, 'e': crash3,
+        'a': tom1, 's': tom2, 'd': tom3,
+        'z': kick, 'x': snare, 'c': hihat,
+      },
     }
-  }
-
-  playDrum(key) {
-    const drumMap = {
-      q: 'Crash 1', w: 'Crash 2', e: 'Crash 3',
-      a: 'Tom 1', s: 'Tom 2', d: 'Tom 3',
-      z: 'Kick', x: 'Snare', c: 'Hi-hat',
-    };
-
-    const soundMap = {
-      q: crash1, w: crash2, e: crash3,
-      a: tom1, s: tom2, d: tom3,
-      z: kick, x: snare, c: hihat,
-    };
-
-    this.setState ({
-      drum: drumMap[key],
-      drumSound: soundMap[key],
-      soundStatus: 'PLAYING'
-    });
-  }
-
-  stopDrum() {
-    this.setState ({
-      soundStatus: 'STOPPED',
-    });
   }
 
   render() {
     return (
       <div id="drum-machine">
-        <div id="display">
-          <Display drum={this.props.drum}/>
-          <div id="drum-info">DRUM {this.state.drum}</div>
-        </div>
-        <Sound 
-          url={this.state.drumSound}
-          playStatus={this.state.soundStatus}
-          autoLoad={true}
-        />
-        <KeyboardEventHandler
-          handleKeys={['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']}
-          handleEventType="keydown"
-          onKeyEvent={(key) => {this.playDrum(key)}} 
-          >
-          
-        </KeyboardEventHandler>
-        <KeyboardEventHandler
-          handleKeys={['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']}
-          handleEventType="keyup"
-          onKeyEvent={() => {this.stopDrum()}}>
-        </KeyboardEventHandler>
+        <Display />
+        <table>
+          <tr>
+            <td><DrumPad id="crash1" drum={this.state.drumMap['q']} key="Q" kbd="Q"/></td>
+            <td><DrumPad id="crash2" drum={this.state.drumMap['w']} key="W" kbd="W"/></td>
+            <td><DrumPad id="crash3" drum={this.state.drumMap['e']} key="E" kbd="E"/></td>
+          </tr>
+          <tr>
+            <td><DrumPad id="tom1" drum={this.state.drumMap['a']} key="A" kbd="A"/></td>
+            <td><DrumPad id="tom2" drum={this.state.drumMap['s']} key="S" kbd="S"/></td>
+            <td><DrumPad id="tom3" drum={this.state.drumMap['d']} key="D" kbd="D"/></td>
+          </tr>
+          <tr>
+            <td><DrumPad id="kick" drum={this.state.drumMap['z']} key="Z" kbd="Z"/></td>
+            <td><DrumPad id="snare" drum={this.state.drumMap['x']} key="X" kbd="X"/></td>
+            <td><DrumPad id="hihat" drum={this.state.drumMap['c']} key="C" kbd="C"/></td>
+          </tr>
+        </table>
+        <ReactFCCtest />
       </div>
     )
   }
+}
+
+const drumMapper = (setNum) => {
+
+  const drumMaps = [{
+    'q': crash1, 'w': crash2, 'e': crash3,
+    'a': tom1, 's': tom2, 'd': tom3,
+    'z': kick, 'x': snare, 'c': hihat,
+  }];
+
+  return drumMaps[setNum + 1];
 }
 
 export default App;
