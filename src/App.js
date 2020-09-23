@@ -1,6 +1,5 @@
 import React from 'react';
 import KeyboardEventHandler from 'react-keyboard-event-handler';
-import Sound from 'react-sound';
 import './App.css';
 import kick from './kick.wav';
 import snare from './snare.wav';
@@ -17,68 +16,101 @@ import ReactFCCtest from 'react-fcctest';
 const Display = (props) => {
   return (
     <div id="display">
-
+     <h1 className="drum-info">{props.display}</h1>
     </div>
   )
 };
 
-const DrumPad = (props) => {
-  return (
-    <button className="drum-pad" id={props.id}>
-      {props.kbd}
-      <audio src={props.drum} className="clip" id={props.kbd}/>
-    </button>
-  );
+class DrumPad extends React.Component {
+  constructor(props) {
+    super(props);
+    this.playDrum = this.playDrum.bind(this);
+  }
+
+  playDrum(action, key) {
+    if (action === 'clickPlay') {
+      const drumSound = document.getElementById(key);
+      drumSound.play();
+    } else if (action === "keyPlay") {
+        const formatKey = key.toUpperCase();
+        const drumSound = document.getElementById(formatKey);
+        drumSound.play();
+    }
+  }
+
+  render() {
+    return (
+        <div className="drum-pad" id={this.props.id} 
+            onClick={() => {this.playDrum('clickPlay', this.props.kbd);
+            this.props.click(this.props.kbd.toLowerCase())}}>
+          <KeyboardEventHandler
+            handleKeys={[this.props.kbd]}
+            onKeyEvent={(key) => this.playDrum('keyPlay', key)}/>
+          {this.props.kbd}
+          <audio className="clip" id={this.props.kbd} src={this.props.drum}/>
+        </div>
+    );
+  }
 };
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      drumMap: {
-        'q': crash1, 'w': crash2, 'e': crash3,
-        'a': tom1, 's': tom2, 'd': tom3,
-        'z': kick, 'x': snare, 'c': hihat,
-      },
+      playingDrum: ' ',
     }
+    this.setDisplay = this.setDisplay.bind(this);
+  }
+
+  drumMap = {
+    'q': crash1, 'w': crash2, 'e': crash3,
+    'a': tom1, 's': tom2, 'd': tom3,
+    'z': kick, 'x': snare, 'c': hihat,
+  }
+
+  drumDisplayMap = {
+    'q': 'crash 1', 'w': 'crash 2', 'e': 'crash 3',
+    'a': 'tom 1', 's': 'tom 2', 'd': 'tom 3',
+    'z': 'kick', 'x': 'snare', 'c': 'hi-hat',
+  }
+
+  setDisplay(drum) {
+    this.setState ({
+      playingDrum: this.drumDisplayMap[drum],
+    });
   }
 
   render() {
     return (
       <div id="drum-machine">
-        <Display />
-        <table>
-          <tr>
-            <td><DrumPad id="crash1" drum={this.state.drumMap['q']} key="Q" kbd="Q"/></td>
-            <td><DrumPad id="crash2" drum={this.state.drumMap['w']} key="W" kbd="W"/></td>
-            <td><DrumPad id="crash3" drum={this.state.drumMap['e']} key="E" kbd="E"/></td>
-          </tr>
-          <tr>
-            <td><DrumPad id="tom1" drum={this.state.drumMap['a']} key="A" kbd="A"/></td>
-            <td><DrumPad id="tom2" drum={this.state.drumMap['s']} key="S" kbd="S"/></td>
-            <td><DrumPad id="tom3" drum={this.state.drumMap['d']} key="D" kbd="D"/></td>
-          </tr>
-          <tr>
-            <td><DrumPad id="kick" drum={this.state.drumMap['z']} key="Z" kbd="Z"/></td>
-            <td><DrumPad id="snare" drum={this.state.drumMap['x']} key="X" kbd="X"/></td>
-            <td><DrumPad id="hihat" drum={this.state.drumMap['c']} key="C" kbd="C"/></td>
-          </tr>
+        <KeyboardEventHandler 
+          handleKeys={['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']}
+          onKeyEvent = {(key) => {this.setDisplay(key)}}
+        />
+        <table className="keypad">
+            <tbody>
+            <tr>
+              <td><DrumPad id="crash1" drum={this.drumMap['q']} key="q" kbd="Q" click={this.setDisplay}/></td>
+              <td><DrumPad id="crash2" drum={this.drumMap['w']} key="w" kbd="W" click={this.setDisplay}/></td>
+              <td><DrumPad id="crash3" drum={this.drumMap['e']} key="e" kbd="E" click={this.setDisplay}/></td>
+            </tr>
+            <tr>
+              <td><DrumPad id="tom1" drum={this.drumMap['a']} key="a" kbd="A" click={this.setDisplay}/></td>
+              <td><DrumPad id="tom2" drum={this.drumMap['s']} key="s" kbd="S" click={this.setDisplay}/></td>
+              <td><DrumPad id="tom3" drum={this.drumMap['d']} key="d" kbd="D" click={this.setDisplay}/></td>
+            </tr>
+            <tr>
+              <td><DrumPad id="kick" drum={this.drumMap['z']} key="z" kbd="Z" click={this.setDisplay}/></td>
+              <td><DrumPad id="snare" drum={this.drumMap['x']} key="x" kbd="X" click={this.setDisplay}/></td>
+              <td><DrumPad id="hihat" drum={this.drumMap['c']} key="c" kbd="C" click={this.setDisplay}/></td>
+            </tr>
+            </tbody>
         </table>
+        <Display display={this.state.playingDrum}/>
         <ReactFCCtest />
       </div>
     )
   }
-}
-
-const drumMapper = (setNum) => {
-
-  const drumMaps = [{
-    'q': crash1, 'w': crash2, 'e': crash3,
-    'a': tom1, 's': tom2, 'd': tom3,
-    'z': kick, 'x': snare, 'c': hihat,
-  }];
-
-  return drumMaps[setNum + 1];
 }
 
 export default App;
