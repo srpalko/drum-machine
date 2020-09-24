@@ -27,25 +27,28 @@ class DrumPad extends React.Component {
     this.playDrum = this.playDrum.bind(this);
   }
 
-  playDrum(action, key) {
-    if (action === 'clickPlay') {
-      const drumSound = document.getElementById(key);
-      drumSound.play();
-    } else if (action === "keyPlay") {
+  playDrum(key) {
         const formatKey = key.toUpperCase();
         const drumSound = document.getElementById(formatKey);
         drumSound.play();
     }
+
+    handleKey(event) {
+      let key = String.fromCharCode(event.keyCode);
+      let formatKey = key.toUpperCase();
+      let keyDrumSound = document.getElementById(formatKey);
+      keyDrumSound.play();
+    }
+  
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKey)
   }
 
   render() {
     return (
         <div className="drum-pad" id={this.props.id} 
-            onClick={() => {this.playDrum('clickPlay', this.props.kbd);
+            onClick={() => {this.playDrum(this.props.kbd);
             this.props.click(this.props.kbd.toLowerCase())}}>
-          <KeyboardEventHandler
-            handleKeys={[this.props.kbd]}
-            onKeyEvent={(key) => this.playDrum('keyPlay', key)}/>
           {this.props.kbd}
           <audio className="clip" id={this.props.kbd} src={this.props.drum}/>
         </div>
